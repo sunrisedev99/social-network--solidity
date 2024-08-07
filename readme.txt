@@ -1,0 +1,3 @@
+- install node
+- install Ganache
+- install -g truffle@5.0.5
