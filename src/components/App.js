@@ -31,12 +31,17 @@ class App extends Component {
   async loadWeb3() {
     if (window.ethereum) {
       window.web3 = new Web3(window.ethereum)
-      await window.ethereum.enable()
+      try {
+        await window.ethereum.enable()
+      } catch (error) {
+        console.error("User denied account access")
+      }
     }
     else if (window.web3) {
       window.web3 = new Web3(window.web3.currentProvider)
     }
     else {
+      window.web3 = new Web3(new Web3.providers.HttpProvider('http://127.0.0.1:7545'))
       window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
     }
   }
@@ -45,16 +50,20 @@ class App extends Component {
     const web3 = window.web3
     // Load account
     const accounts = await web3.eth.getAccounts()
+    console.log("accounts ==> ", accounts)
     this.setState({ account: accounts[0] })
     // Network ID
     const networkId = await web3.eth.net.getId()
     console.log("networkId:  ", networkId);
+    console.log("socialNetwork: ", SocialNetwork)
     console.log("SocialNetwork.networks:  ", SocialNetwork.networks);
     const networkData = SocialNetwork.networks[networkId]
+    // const networkData = SocialNetwork.networks["5777"]
     if(networkData) {
       const socialNetwork = web3.eth.Contract(SocialNetwork.abi, networkData.address)
       this.setState({ socialNetwork })
       const postCount = await socialNetwork.methods.postCount().call()
+      console.log("postCount: ", postCount)
       this.setState({ postCount })
       // Load Posts
       for (var i = 1; i <= postCount; i++) {
@@ -71,6 +80,7 @@ class App extends Component {
       window.alert('SocialNetwork contract not deployed to detected network.')
     }
   }
+
 
   createPost(content) {
     this.setState({ loading: true })

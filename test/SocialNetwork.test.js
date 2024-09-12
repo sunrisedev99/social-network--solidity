@@ -14,6 +14,7 @@ contract('SocialNetwork', ([deployer, author, tipper]) => {
     describe('deployment', async () => {
         it('deploys successfully', async () => {
             const address = await socialNetwork.address
+            console.log("address: ", address);
             assert.notEqual(address, 0x0)
             assert.notEqual(address, '')
             assert.notEqual(address, null)
